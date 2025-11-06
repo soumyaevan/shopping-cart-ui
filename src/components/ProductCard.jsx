@@ -1,7 +1,9 @@
-import { useCart } from "../context/CartContext";
+// import { useCart } from "../context/CartContext";
+import useCartStore from "../stores/useCartStore";
 
 const ProductCard = ({ product }) => {
-  const { addToCart } = useCart();
+  // const { addToCart } = useCart();
+  const { addToCart } = useCartStore();
   return (
     <div className="bg-white rounded-lg shadow p-4 flex flex-col">
       <img

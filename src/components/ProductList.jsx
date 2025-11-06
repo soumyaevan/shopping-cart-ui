@@ -1,8 +1,19 @@
+import { useProducts } from "../stores/useProduct";
 import ProductCard from "./ProductCard";
-import { useProducts } from "../context/ProductContext";
+
+import { useEffect } from "react";
 
 const ProductList = () => {
-  const { products, loading, error } = useProducts();
+  // const { products, loading, error } = useProducts();
+  const {
+    data: products = [],
+    isLoading: loading,
+    error,
+    refetch,
+  } = useProducts();
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
   return (
     <>
       {loading && <p>Loading ...</p>}

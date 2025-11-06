@@ -1,14 +1,28 @@
 import { useEffect, useRef, useState } from "react";
-import { useCart } from "../context/CartContext";
+// import { useCart } from "../context/CartContext";
 import { FaShoppingCart } from "react-icons/fa";
+import useCartStore from "../stores/useCartStore";
 const Header = () => {
   const [showCartBox, setShowCartBox] = useState(false);
   const cartRef = useRef(null);
-  const { itemInCart, removeFromCart, clearCart } = useCart();
-  const itemCount = itemInCart.reduce((acc, item) => acc + item.qty, 0);
-  const totalPrice = itemInCart
-    .reduce((acc, item) => acc + item.price * item.qty, 0)
-    .toFixed(2);
+  // const { itemInCart, removeFromCart, clearCart } = useCart();
+  const {
+    itemsInCart,
+    removeFromCart,
+    removeSingleFromCart,
+    clearCart,
+    getItemCount,
+    getTotalPrice,
+    initializeCart,
+  } = useCartStore();
+
+  useEffect(() => {
+    initializeCart();
+  }, [initializeCart]);
+
+  const itemCount = getItemCount();
+  const totalPrice = getTotalPrice();
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (cartRef.current && !cartRef.current.contains(event.target)) {
@@ -22,7 +36,8 @@ const Header = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  });
+  }, [showCartBox]);
+
   return (
     <header className="bg-white p-4 flex justify-between items-center shadow-md">
       <h1 className="text-blue-500 font-bold text-2xl pl-2">ShopMate</h1>
@@ -42,12 +57,12 @@ const Header = () => {
           <div className="absolute right-0 mt-2 w-80 bg-white shadow-lg border rounded z-50">
             <div className="p-4">
               <h2 className="font-semibold text-lg mb-2">Cart Items</h2>
-              {itemInCart.length === 0 ? (
+              {itemsInCart.length === 0 ? (
                 <p className="text-gray-500 text-sm"> Your cart is empty</p>
               ) : (
                 <>
                   <ul className="max-h-60 overflow-y-auto divide-y divide-gray-200">
-                    {itemInCart.map((item) => (
+                    {itemsInCart.map((item) => (
                       <li
                         key={item.id}
                         className="flex justify-between items-center py-2"
@@ -63,6 +78,12 @@ const Header = () => {
                           onClick={() => removeFromCart(item.id)}
                         >
                           Remove
+                        </button>
+                        <button
+                          className="text-sm text-red-500 hover:underline"
+                          onClick={() => removeSingleFromCart(item)}
+                        >
+                          Reduce
                         </button>
                       </li>
                     ))}
